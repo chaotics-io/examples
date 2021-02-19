@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  aws-sdk-example
+
+  Sample SAM Template for aws-sdk-example
+
+Globals:
+  Function:
+    Timeout: 20
+
+Resources:
+  DogFactFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dogfacts
+      Handler: helloworld.App::handleRequest
+      Runtime: java11
+      MemorySize: 1024
+      Environment:
+        Variables:
+          PARAM1: VALUE
+      Events:
+        HelloWorld:
+          Type: Api
+          Properties:
+            Path: /fact
+            Method: get
+
+Outputs:
+  DogFactFunctionApi:
+    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/fact/"
+  DogFactFunction:
+    Description: "Hello World Lambda Function ARN"
+    Value: !GetAtt HelloWorldFunction.Arn

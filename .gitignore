@@ -25,3 +25,4 @@ hs_err_pid*
 /getting-started/target/
 *.iml
 /catfacts/target/
+/aws-sdk-example/.aws-sam/
