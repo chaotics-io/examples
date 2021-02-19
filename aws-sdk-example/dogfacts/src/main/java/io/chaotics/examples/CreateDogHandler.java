@@ -18,21 +18,19 @@ import java.util.UUID;
 
 public class CreateDogHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
 
-    private static final String OVERRIDE_URL = System.getenv("DDB_OVERRIDE_URL");
-
     private static DynamoDbClient dynamoDbClient;
 
-    static {
-        DynamoDbClientBuilder dynamoDbClientBuilder = DynamoDbClient.builder()
-                .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
-                .region(Region.EU_WEST_1)
-                .httpClientBuilder(UrlConnectionHttpClient.builder());
+    public CreateDogHandler() {
+        dynamoDbClient = DynamoDbClient.create();
+    }
 
-        if (OVERRIDE_URL != null) {
-            dynamoDbClientBuilder.endpointOverride(URI.create(OVERRIDE_URL));
-        }
-
-        dynamoDbClient = dynamoDbClientBuilder.build();
+    public CreateDogHandler(String overrideUrl) {
+        dynamoDbClient = DynamoDbClient.builder()
+//                .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
+//                .region(Region.EU_WEST_1)
+                .httpClientBuilder(UrlConnectionHttpClient.builder())
+                .endpointOverride(URI.create(overrideUrl))
+                .build();
     }
 
     @Override
@@ -42,10 +40,14 @@ public class CreateDogHandler implements RequestHandler<APIGatewayV2HTTPEvent, A
         String id = UUID.randomUUID().toString();
         Map<String, AttributeValue> item = Map.of("id", s(id),
                                                   "name", s(name));
-        dynamoDbClient.putItem(PutItemRequest.builder()
-                .item(item)
-                .tableName("Dogs")
-                .build());
+        try {
+            dynamoDbClient.putItem(PutItemRequest.builder()
+                    .item(item)
+                    .tableName("Dogs")
+                    .build());
+        } catch (Exception e) {
+            context.getLogger().log(e.getMessage());
+        }
 
         return APIGatewayV2HTTPResponse.builder()
                 .withStatusCode(200)

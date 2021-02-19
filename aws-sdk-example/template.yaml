@@ -39,7 +39,7 @@ Resources:
       MemorySize: 1024
       Environment:
         Variables:
-          PARAM1: VALUE
+          OVERRIDE_URL: https://api.chaotics.io/endpoint?apiId=a50eb35e-b89d-4a06-8dd7-9b150a0036cf
       Events:
         HelloWorld:
           Type: Api
