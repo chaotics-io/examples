@@ -10,11 +10,11 @@ Globals:
     Timeout: 20
 
 Resources:
-  DogFactFunction:
+  GetDogFactFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: dogfacts
-      Handler: helloworld.App::handleRequest
+      Handler: io.chaotics.examples.GetDogHandler::handleRequest
       Runtime: java11
       MemorySize: 1024
       Environment:
@@ -26,11 +26,43 @@ Resources:
           Properties:
             Path: /fact
             Method: get
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref DogFactsTable
+
+  CreateDogFactFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dogfacts
+      Handler: io.chaotics.examples.CreateDogHandler::handleRequest
+      Runtime: java11
+      MemorySize: 1024
+      Environment:
+        Variables:
+          PARAM1: VALUE
+      Events:
+        HelloWorld:
+          Type: Api
+          Properties:
+            Path: /fact
+            Method: post
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref DogFactsTable
+
+  DogFactsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: Dogs
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
 
 Outputs:
   DogFactFunctionApi:
     Description: "API Gateway endpoint URL for Prod stage for Hello World function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/fact/"
-  DogFactFunction:
-    Description: "Hello World Lambda Function ARN"
-    Value: !GetAtt HelloWorldFunction.Arn

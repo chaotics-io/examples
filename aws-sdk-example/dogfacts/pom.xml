@@ -1,14 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>helloworld</groupId>
-    <artifactId>HelloWorld</artifactId>
+    <groupId>io.chaotics.examples</groupId>
+    <artifactId>aws-sdk-example</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
-    <name>A sample Hello World created for SAM CLI.</name>
+    <name>A Chaotics example overriding the AWS SDK for Java.</name>
     <properties>
-        <maven.compiler.source>1.9</maven.compiler.source>
-        <maven.compiler.target>1.9</maven.compiler.target>
+        <maven.compiler.source>1.11</maven.compiler.source>
+        <maven.compiler.target>1.11</maven.compiler.target>
     </properties>
 
     <dependencyManagement>
@@ -84,8 +84,8 @@
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-compiler-plugin</artifactId>
               <configuration>
-                  <source>9</source>
-                  <target>9</target>
+                  <source>11</source>
+                  <target>11</target>
               </configuration>
           </plugin>
       </plugins>

@@ -1,4 +1,4 @@
-package io.choatics.examples;
+package io.chaotics.examples;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -10,13 +10,13 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClientBuilder;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
-import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
-import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
+import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 
 import java.net.URI;
 import java.util.Map;
+import java.util.UUID;
 
-public class GetDogHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
+public class CreateDogHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
 
     private static final String OVERRIDE_URL = System.getenv("DDB_OVERRIDE_URL");
 
@@ -37,20 +37,23 @@ public class GetDogHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIG
 
     @Override
     public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent event, Context context) {
-        String id = event.getQueryStringParameters().get("id");
+        String name = event.getBody();
 
-        GetItemResponse item = dynamoDbClient.getItem(GetItemRequest.builder()
-                .key(Map.of("id", AttributeValue.builder()
-                        .s(id)
-                        .build()))
+        String id = UUID.randomUUID().toString();
+        Map<String, AttributeValue> item = Map.of("id", s(id),
+                                                  "name", s(name));
+        dynamoDbClient.putItem(PutItemRequest.builder()
+                .item(item)
                 .tableName("Dogs")
                 .build());
 
-        String name = item.item().get("name").s();
-
         return APIGatewayV2HTTPResponse.builder()
-                .withBody(name)
                 .withStatusCode(200)
+                .withBody(id)
                 .build();
+    }
+
+    private AttributeValue s(String s) {
+        return AttributeValue.builder().s(s).build();
     }
 }
